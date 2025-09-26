@@ -1,10 +1,10 @@
 export function request(ctx) {
   const { interests = [] } = ctx.args;
 
-  const prompt = `Suggest a travel destination using these interests: ${interests.join(", ")}. `;
+  const prompt = `Suggest a travel destination using these interests: ${interests.join(", ")}.`;
 
   return {
-    resourcePath: "/model/anthropic.claude-3-sonnet-20240229-v1:0/invoke",
+    resourcePath: "/model/anthropic.claude-3-7-sonnet-20250219-v1:0",
     method: "POST",
     params: {
       headers: {
@@ -13,13 +13,13 @@ export function request(ctx) {
       body: JSON.stringify({
         anthropic_version: "bedrock-2023-05-31",
         max_tokens: 1000,
-        messsages: [
+        messages: [
           {
             role: "user",
             content: [
               {
                 type: "text",
-                text: `\n\nHuman: ${prompt}\n\nAssistant:`,
+                text: prompt,
               },
             ],
           },
@@ -31,8 +31,7 @@ export function request(ctx) {
 
 export function response(ctx) {
   const parsedBody = JSON.parse(ctx.result.body);
-  const res = {
-    body: parsedBody.content[0].text,
+  return {
+    body: parsedBody.content?.[0]?.text ?? "",
   };
-  return res;
 }
